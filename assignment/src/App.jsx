@@ -1,19 +1,10 @@
-import { useEffect, useState } from 'react'
 import './App.css'
-import Welcome from './components/Welcome'
+import OrderEditor from './components/OrderEditor';
 
 function App() {
-  const [name, setName] = useState('')
-  const [isMember, setIsMember] = useState(false);
-
-  useEffect(() => {
-    setName('테드풀');
-    setIsMember(true);
-  }, [])
-
   return (
     <>
-      <Welcome name={name} isMember={isMember} />
+      <OrderEditor />
     </>
   )
 }
