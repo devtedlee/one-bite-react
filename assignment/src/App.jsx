@@ -1,10 +1,10 @@
 import './App.css'
-import OrderEditor from './components/OrderEditor';
+import ExchangeRateTranslator from './components/ExchangeRateTranslator';
 
 function App() {
   return (
     <>
-      <OrderEditor />
+      <ExchangeRateTranslator />
     </>
   )
 }
