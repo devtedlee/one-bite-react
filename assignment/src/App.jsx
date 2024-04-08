@@ -1,12 +1,12 @@
-import './App.css'
-import ExchangeRateTranslator from './components/ExchangeRateTranslator';
+import './App.css';
+import TodoList from './components/TodoList';
 
 function App() {
   return (
     <>
-      <ExchangeRateTranslator />
+      <TodoList />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
