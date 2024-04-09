@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useReducer } from 'react';
 import './App.css';
 import Editor from './components/Editor';
 import Header from './components/Header';
@@ -24,36 +24,51 @@ const mockData = [
     date: new Date().getTime(),
   },
 ];
+
+function reducer(todos, action) {
+  switch (action.type) {
+    case 'CREATE':
+      return todos.concat(action.payload);
+    case 'UPDATE':
+      return todos.map((todo) =>
+        todo.id === action.payload
+          ? { ...todo, isDone: !todo.isDone }
+          : todo
+      );
+    case 'DELETE':
+      return todos.filter((todo) => todo.id !== action.payload);
+    default:
+      return todos;
+  }
+}
 function App() {
-  const [todos, setTodos] = useState(mockData);
+  const [todos, dispatch] = useReducer(reducer, mockData);
   const idRef = useRef(3);
 
   const handleOnCreate = (content) => {
-    const newTodo = {
-      id: idRef.current++,
-      isDone: false,
-      content,
-      date: new Date().getTime(),
-    };
-    setTodos([...todos, newTodo]);
+    dispatch({
+      type: 'CREATE',
+      payload: {
+        id: idRef.current++,
+        isDone: false,
+        content,
+        date: new Date().getTime(),
+      },
+    });
   };
 
   const handleOnUpdate = (targetId) => {
-    setTodos(
-      todos.map((todo) => {
-        if (todo.id === targetId) {
-          return {
-            ...todo,
-            isDone: !todo.isDone,
-          };
-        }
-        return todo;
-      })
-    );
+    dispatch({
+      type: 'UPDATE',
+      payload: targetId,
+    });
   };
 
   const handleOnDelete = (targetId) => {
-    setTodos(todos.filter((todo) => todo.id !== targetId));
+    dispatch({
+      type: 'DELETE',
+      payload: targetId,
+    });
   };
 
   return (
