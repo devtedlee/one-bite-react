@@ -1,4 +1,4 @@
-import { useRef, useReducer } from "react";
+import { useRef, useReducer, useCallback } from "react";
 import "./App.css";
 import ContactEditor from "./components/ContactEditor";
 import ContactList from "./components/ContactList";
@@ -23,7 +23,7 @@ function reducer (state, action) {
 function App() {
   const [contacts, dispatch] = useReducer(reducer, contactData);
   const idRef = useRef(4);
-  const handleOnAddContact = (name, contact) => {
+  const handleOnAddContact = useCallback((name, contact) => {
     dispatch({
       type: 'ADD',
       contact: {
@@ -32,14 +32,14 @@ function App() {
         contact,
       },
     });
-  };
+  }, []);
 
-  const handleOnRemoveContact = (id) => {
+  const handleOnRemoveContact = useCallback((id) => {
     dispatch({
       type: 'REMOVE',
       id,
     });
-  }
+  }, []);
   return (
     <div className="App">
       <h2>Contact List</h2>
