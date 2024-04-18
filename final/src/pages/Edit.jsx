@@ -5,12 +5,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { DiaryDispatchContext, DiaryStateContext } from "../App";
 import useDiary from "../hooks/useDiary";
+import usePageTitle from "../hooks/usePageTitle";
 
 function Edit() {
   const params = useParams();
   const { deleteDiary, editDiary } = useContext(DiaryDispatchContext);
   const nav = useNavigate();
   const currentDiaryItem = useDiary(params.id);
+  usePageTitle("일기 수정하기 🖱");
 
   const handleOnClickDelete = () => {
     if (window.confirm("정말로 삭제하시겠습니까?")) {
