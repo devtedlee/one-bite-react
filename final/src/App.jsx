@@ -1,5 +1,5 @@
 import "./App.css";
-import { useRef, useReducer, createContext } from "react";
+import { useRef, useReducer, createContext, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import New from "./pages/New";
@@ -7,51 +7,65 @@ import Diary from "./pages/Diary";
 import Edit from "./pages/Edit";
 import NotFound from "./pages/NotFound";
 
-const mockData = [
-  {
-    id: 1,
-    createdDate: new Date("2024-04-15").getTime(),
-    emotionId: 1,
-    content: "1번 일기 내용",
-  },
-  {
-    id: 2,
-    createdDate: new Date("2024-04-14").getTime(),
-    emotionId: 2,
-    content: "2번 일기 내용",
-  },
-  {
-    id: 3,
-    createdDate: new Date("2024-03-14").getTime(),
-    emotionId: 3,
-    content: "3번 일기 내용",
-  },
-];
-
 function reducer(state, action) {
+  let nextState;
+
   switch (action.type) {
+    case "INIT":
+      return action.diary;
     case "ADD":
-      return [...state, action.diary];
+      nextState = [...state, action.diary];
+      break;
     case "EDIT":
-      return state.map((diary) =>
+      nextState = state.map((diary) =>
         String(diary.id) === String(action.diary.id) ? action.diary : diary
       );
+      break;
     case "DELETE":
-      return state.filter((diary) => String(diary.id) !== String(action.id));
+      nextState = state.filter(
+        (diary) => String(diary.id) !== String(action.id)
+      );
+      break;
     default:
       break;
   }
-  return state;
+
+  localStorage.setItem("diary", JSON.stringify(nextState));
+  return nextState;
 }
 
 export const DiaryStateContext = createContext();
 export const DiaryDispatchContext = createContext();
 
 function App() {
-  const idRef = useRef(3);
-  const [data, dispatch] = useReducer(reducer, mockData);
+  const idRef = useRef(0);
+  const [data, dispatch] = useReducer(reducer, []);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleOnAddDiary = (createdDate, emotionId, content) => {
+  useEffect(() => {
+    const savedData = localStorage.getItem("diary");
+    if (!savedData) {
+      setIsLoading(false);
+      return;
+    }
+
+    const parsedData = JSON.parse(savedData);
+    if (!Array.isArray(parsedData)) {
+      setIsLoading(false);
+      return;
+    }
+
+    let maxId = 0;
+    parsedData.forEach(({ id }) => {
+      if (Number(id) > maxId) maxId = id;
+    });
+
+    idRef.current = maxId + 1;
+    dispatch({ type: "INIT", diary: parsedData });
+    setIsLoading(false);
+  }, []);
+
+  const addDiary = (createdDate, emotionId, content) => {
     dispatch({
       type: "ADD",
       diary: {
@@ -63,7 +77,7 @@ function App() {
     });
   };
 
-  const handleOnEditDiary = (id, createdDate, emotionId, content) => {
+  const editDiary = (id, createdDate, emotionId, content) => {
     dispatch({
       type: "EDIT",
       diary: {
@@ -75,14 +89,18 @@ function App() {
     });
   };
 
-  const handleOnDeleteDiary = (id) => {
+  const deleteDiary = (id) => {
     dispatch({ type: "DELETE", id });
   };
+
+  if (isLoading) {
+    return <div>데이터 로딩중입니다...</div>;
+  }
   return (
     <>
       <DiaryStateContext.Provider value={data}>
         <DiaryDispatchContext.Provider
-          value={{ handleOnAddDiary, handleOnEditDiary, handleOnDeleteDiary }}
+          value={{ addDiary, editDiary, deleteDiary }}
         >
           <Routes>
             <Route path="/" element={<Home />} />

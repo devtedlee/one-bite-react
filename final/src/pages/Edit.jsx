@@ -8,21 +8,20 @@ import useDiary from "../hooks/useDiary";
 
 function Edit() {
   const params = useParams();
-  const { handleOnDeleteDiary, handleOnEditDiary } =
-    useContext(DiaryDispatchContext);
+  const { deleteDiary, editDiary } = useContext(DiaryDispatchContext);
   const nav = useNavigate();
   const currentDiaryItem = useDiary(params.id);
 
   const handleOnClickDelete = () => {
     if (window.confirm("정말로 삭제하시겠습니까?")) {
-      handleOnDeleteDiary(params.id);
+      deleteDiary(params.id);
       nav("/", { replace: true });
     }
   };
 
   const handleOnSubmit = (input) => {
     if (window.confirm("수정하시겠습니까?")) {
-      handleOnEditDiary(
+      editDiary(
         params.id,
         input.createdDate.getTime(),
         input.emotionId,

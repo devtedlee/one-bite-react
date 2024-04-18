@@ -6,15 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { DiaryDispatchContext } from "../App";
 
 function New() {
-  const { handleOnAddDiary } = useContext(DiaryDispatchContext);
+  const { addDiary } = useContext(DiaryDispatchContext);
   const nav = useNavigate();
 
   const handleOnSubmit = (input) => {
-    handleOnAddDiary(
-      input.createdDate.getTime(),
-      input.emotionId,
-      input.content
-    );
+    addDiary(input.createdDate.getTime(), input.emotionId, input.content);
     nav("/", { replace: true });
   };
 
